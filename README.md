@@ -226,6 +226,270 @@ The enhanced GUI supports multiple themes:
 - Best practice suggestions
 - Performance optimization tips
 
+## �‍💻 Devneloper Guide
+
+### 🛠️ Development Setup
+
+#### Prerequisites
+- **Node.js** (v16 or higher)
+- **npm** or **yarn**
+- **VS Code** (latest version)
+- **TypeScript** (globally installed)
+
+```bash
+npm install -g typescript
+npm install -g @vscode/vsce
+```
+
+#### Clone and Setup
+```bash
+# Clone the repository
+git clone https://github.com/Xenonesis/Code_Guardian-IDE-Extension.git
+cd Code_Guardian-IDE-Extension
+
+# Install dependencies
+npm install
+
+# Install development dependencies
+npm install --save-dev
+```
+
+### 🔨 Building the Extension
+
+#### Compile TypeScript
+```bash
+# Compile TypeScript to JavaScript
+npm run compile
+
+# Watch mode for development
+npm run watch
+
+# Clean build
+npm run clean && npm run compile
+```
+
+#### Build VSIX Package
+```bash
+# Create the extension package
+vsce package
+
+# This generates: guardian-security-x.x.x.vsix
+```
+
+#### Alternative Build Methods
+```bash
+# Using npm scripts (if configured)
+npm run build
+
+# Build with specific version
+vsce package --out guardian-security-2.0.0.vsix
+
+# Build pre-release version
+vsce package --pre-release
+```
+
+### 📦 Extension Structure
+
+```
+Code_Guardian-IDE-Extension/
+├── src/                          # Source code
+│   ├── ai/                       # AI and chatbot modules
+│   │   ├── aiProvider.ts
+│   │   └── chatbot.ts
+│   ├── analysis/                 # Analysis engines
+│   │   ├── securityAnalysis.ts
+│   │   ├── codeQuality.ts
+│   │   ├── secretDetection.ts
+│   │   ├── databaseAnalysis.ts
+│   │   ├── devopsAnalysis.ts
+│   │   └── fullStackAnalysis.ts
+│   ├── dashboard/                # UI components
+│   │   ├── modernDashboard.ts
+│   │   ├── enhancedWebview.ts
+│   │   ├── interactiveSidebar.ts
+│   │   └── notificationManager.ts
+│   ├── types/                    # TypeScript definitions
+│   ├── utils/                    # Utility functions
+│   └── extension.ts              # Main extension entry point
+├── out/                          # Compiled JavaScript (auto-generated)
+├── node_modules/                 # Dependencies
+├── package.json                  # Extension manifest
+├── tsconfig.json                 # TypeScript configuration
+├── .vscodeignore                 # Files to exclude from package
+└── README.md                     # Documentation
+```
+
+### 🔍 Extracting and Analyzing Extension
+
+#### Extract VSIX Contents
+```bash
+# Method 1: Rename and extract as ZIP
+cp guardian-security-2.0.0.vsix guardian-security-2.0.0.zip
+unzip guardian-security-2.0.0.zip -d extracted-extension/
+
+# Method 2: Use 7-Zip or similar tools
+7z x guardian-security-2.0.0.vsix -o extracted-extension/
+
+# Method 3: Using VS Code Extension Manager
+code --install-extension guardian-security-2.0.0.vsix
+```
+
+#### Analyze Extension Contents
+```bash
+# Navigate to extracted directory
+cd extracted-extension/
+
+# View extension manifest
+cat package.json | jq '.'
+
+# Check compiled code
+ls -la extension/out/
+
+# View extension files
+tree . -I node_modules
+```
+
+### 🧪 Development and Testing
+
+#### Local Development
+```bash
+# Open in VS Code
+code .
+
+# Press F5 to launch Extension Development Host
+# This opens a new VS Code window with your extension loaded
+
+# Make changes and reload the extension development host
+# Ctrl+R (Windows/Linux) or Cmd+R (Mac)
+```
+
+#### Testing the Extension
+```bash
+# Run tests (if configured)
+npm test
+
+# Manual testing checklist:
+# 1. Install the extension in development mode
+# 2. Test all analysis features
+# 3. Verify dashboard functionality
+# 4. Test AI assistant features
+# 5. Check export functionality
+```
+
+#### Debug Mode
+1. **Set breakpoints** in TypeScript source files
+2. **Press F5** to start debugging
+3. **Use Debug Console** in VS Code for logging
+4. **Inspect variables** and execution flow
+
+### 📋 Development Scripts
+
+Add these to your `package.json` scripts section:
+
+```json
+{
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "clean": "rimraf out",
+    "build": "npm run clean && npm run compile",
+    "package": "vsce package",
+    "publish": "vsce publish",
+    "test": "npm run compile && node ./out/test/runTest.js",
+    "lint": "eslint src --ext ts",
+    "format": "prettier --write src/**/*.ts"
+  }
+}
+```
+
+### 🚀 Publishing and Distribution
+
+#### Prepare for Publishing
+```bash
+# Update version in package.json
+npm version patch  # or minor, major
+
+# Build the extension
+npm run build
+vsce package
+
+# Test the packaged extension
+code --install-extension guardian-security-x.x.x.vsix
+```
+
+#### Publishing to VS Code Marketplace
+```bash
+# Login to Visual Studio Marketplace
+vsce login <publisher-name>
+
+# Publish the extension
+vsce publish
+
+# Publish specific version
+vsce publish 2.0.1
+```
+
+#### Manual Distribution
+```bash
+# Create release package
+vsce package --out releases/guardian-security-2.0.0.vsix
+
+# Share the .vsix file directly
+# Users can install via: code --install-extension guardian-security-2.0.0.vsix
+```
+
+### 🔧 Configuration Files
+
+#### tsconfig.json
+```json
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2020",
+    "outDir": "out",
+    "lib": ["ES2020"],
+    "sourceMap": true,
+    "rootDir": "src",
+    "strict": true
+  },
+  "exclude": ["node_modules", ".vscode-test"]
+}
+```
+
+#### .vscodeignore
+```
+.vscode/**
+.vscode-test/**
+src/**
+.gitignore
+.yarnrc
+vsc-extension-quickstart.md
+**/tsconfig.json
+**/.eslintrc.json
+**/*.map
+**/*.ts
+```
+
+### 🐛 Troubleshooting
+
+#### Common Issues
+1. **Compilation Errors**: Check TypeScript configuration and dependencies
+2. **Extension Not Loading**: Verify package.json manifest and activation events
+3. **Missing Dependencies**: Run `npm install` and check package.json
+4. **VSIX Build Fails**: Check .vscodeignore and file permissions
+
+#### Debug Commands
+```bash
+# Check extension info
+vsce show <extension-name>
+
+# Validate package
+vsce package --no-dependencies
+
+# List files that will be packaged
+vsce ls
+```
+
 ## 🔄 Version History
 
 ### v2.0.0 - Enhanced Comprehensive Security Platform
