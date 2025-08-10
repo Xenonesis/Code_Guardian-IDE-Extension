@@ -228,6 +228,18 @@ The enhanced GUI supports multiple themes:
 
 ## 🔄 Version History
 
+### v2.0.0 - Enhanced Comprehensive Security Platform
+- 🚀 **Full-Stack Security Analysis** - Complete frontend, backend, and API security scanning
+- 🔧 **DevOps Security Analysis** - Container, Kubernetes, Infrastructure as Code security
+- 🗄️ **Database Security Analysis** - Multi-database security scanning and configuration validation
+- 🧠 **Smart Analysis Engine** - Intelligent file detection and context-aware analysis
+- 🤖 **Enhanced AI Assistant** - Advanced chatbot with natural language processing
+- 📊 **Modern Interactive Dashboard** - Real-time updates and improved user experience
+- 🔍 **50+ New Vulnerability Patterns** - Comprehensive CWE-mapped security detection
+- 📈 **Advanced Reporting** - Multiple export formats with detailed insights
+- ⚡ **Performance Optimizations** - Parallel processing and improved analysis speed
+- 🎨 **UI/UX Improvements** - Enhanced notifications, status indicators, and themes
+
 ### v1.0.0 - Enhanced GUI Release
 - ✨ Complete GUI overhaul with modern interface
 - 🎨 Enhanced dashboard with tabbed interface
@@ -243,9 +255,10 @@ The enhanced GUI supports multiple themes:
 ## 🤝 Support
 
 For issues, suggestions, or contributions:
+- **GitHub Repository:** [Code_Guardian-IDE-Extension](https://github.com/Xenonesis/Code_Guardian-IDE-Extension.git)
 - Check the tree view "Settings & Tools" section
 - Use the Command Palette for quick access to all features
 - Export reports for sharing analysis results with your team
 
 **Extension:** GuardianSecurity.vsix
-**Version:** 1.0.0 - Enhanced GUI Edition
+**Version:** 2.0.0 - Enhanced Comprehensive Security Platform
