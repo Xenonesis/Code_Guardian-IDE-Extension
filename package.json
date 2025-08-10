@@ -1,0 +1,441 @@
+{
+  "name": "guardian-security",
+  "displayName": "Guardian Security",
+  "description": "Security and code quality analysis extension.",
+  "version": "1.0.0",
+  "publisher": "guardian-dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/guardian-security/code-guardian-vscode.git"
+  },
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:codeGuardian.analyzeSecurity",
+    "onCommand:codeGuardian.runAllAnalysis",
+    "onLanguage:javascript",
+    "onLanguage:typescript",
+    "onLanguage:python",
+    "onLanguage:java"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "codeGuardian.analyzeSecurity",
+        "title": "Guardian Security: Analyze Security",
+        "icon": "$(shield)"
+      },
+      {
+        "command": "codeGuardian.analyzeQuality",
+        "title": "Guardian Security: Analyze Code Quality",
+        "icon": "$(graph)"
+      },
+      {
+        "command": "codeGuardian.detectSecrets",
+        "title": "Guardian Security: Detect Secrets",
+        "icon": "$(key)"
+      },
+      {
+        "command": "codeGuardian.getAiSuggestions",
+        "title": "Guardian Security: Get AI Suggestions",
+        "icon": "$(lightbulb)"
+      },
+      {
+        "command": "codeGuardian.showWebview",
+        "title": "Guardian Security: Show Dashboard",
+        "icon": "$(dashboard)"
+      },
+      {
+        "command": "codeGuardian.showEnhancedWebview",
+        "title": "Guardian Security: Enhanced Dashboard",
+        "icon": "$(dashboard)"
+      },
+      {
+        "command": "codeGuardian.runAllAnalysis",
+        "title": "Guardian Security: Comprehensive Workspace Analysis",
+        "icon": "$(play-circle)"
+      },
+      {
+        "command": "codeGuardian.analyzeCurrentFile",
+        "title": "Guardian Security: Analyze Current File",
+        "icon": "$(file-code)"
+      },
+      {
+        "command": "codeGuardian.openSettings",
+        "title": "Guardian Security: Open Settings",
+        "icon": "$(settings-gear)"
+      },
+      {
+        "command": "codeGuardian.exportReport",
+        "title": "Guardian Security: Export Report",
+        "icon": "$(export)"
+      },
+      {
+        "command": "codeGuardian.clearHistory",
+        "title": "Guardian Security: Clear History",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "codeGuardian.showQuickTips",
+        "title": "Guardian Security: Show Quick Tips",
+        "icon": "$(info)"
+      },
+      {
+        "command": "codeGuardian.openChatbot",
+        "title": "Guardian Security: Open AI Assistant",
+        "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "codeGuardian.chatWithAnalysis",
+        "title": "Guardian Security: Chat with Analysis Context",
+        "icon": "$(robot)"
+      },
+      {
+        "command": "codeGuardian.askChatbot",
+        "title": "Guardian Security: Ask AI Assistant",
+        "icon": "$(question)"
+      },
+      {
+        "command": "codeGuardian.scanWorkspace",
+        "title": "Guardian Security: Scan Entire Workspace",
+        "icon": "$(folder-active)"
+      },
+      {
+        "command": "codeGuardian.toggleAutoScan",
+        "title": "Guardian Security: Toggle Auto-Scan",
+        "icon": "$(eye)"
+      },
+      {
+        "command": "codeGuardian.clearHighlights",
+        "title": "Guardian Security: Clear Highlights",
+        "icon": "$(clear-all)"
+      },
+      {
+        "command": "codeGuardian.showWorkspaceReport",
+        "title": "Guardian Security: Export Workspace Report",
+        "icon": "$(file-text)"
+      },
+
+      {
+        "command": "codeGuardian.clearAllCaches",
+        "title": "Guardian Security: Clear All Caches",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "codeGuardian.smartAnalysis",
+        "title": "Guardian Security: Smart Analysis",
+        "icon": "$(zap)"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "codeGuardian.runAllAnalysis",
+          "group": "codeGuardian@1",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "codeGuardian.analyzeCurrentFile",
+          "group": "codeGuardian@2",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "codeGuardian.analyzeSecurity",
+          "group": "codeGuardian@3",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "codeGuardian.analyzeQuality",
+          "group": "codeGuardian@3",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "codeGuardian.detectSecrets",
+          "group": "codeGuardian@4",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "codeGuardian.showEnhancedWebview",
+          "group": "codeGuardian@5",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "codeGuardian.chatWithAnalysis",
+          "group": "codeGuardian@6",
+          "when": "editorTextFocus"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "codeGuardian.analyzeSecurity"
+        },
+        {
+          "command": "codeGuardian.analyzeQuality"
+        },
+        {
+          "command": "codeGuardian.detectSecrets"
+        },
+        {
+          "command": "codeGuardian.getAiSuggestions"
+        },
+        {
+          "command": "codeGuardian.showWebview"
+        },
+        {
+          "command": "codeGuardian.showEnhancedWebview"
+        },
+        {
+          "command": "codeGuardian.runAllAnalysis"
+        },
+        {
+          "command": "codeGuardian.analyzeCurrentFile"
+        },
+        {
+          "command": "codeGuardian.openSettings"
+        },
+        {
+          "command": "codeGuardian.exportReport"
+        },
+        {
+          "command": "codeGuardian.clearHistory"
+        },
+        {
+          "command": "codeGuardian.showQuickTips"
+        },
+        {
+          "command": "codeGuardian.openChatbot"
+        },
+        {
+          "command": "codeGuardian.chatWithAnalysis"
+        },
+        {
+          "command": "codeGuardian.askChatbot"
+        },
+        {
+          "command": "codeGuardian.scanWorkspace"
+        },
+        {
+          "command": "codeGuardian.toggleAutoScan"
+        },
+        {
+          "command": "codeGuardian.clearHighlights"
+        },
+        {
+          "command": "codeGuardian.showWorkspaceReport"
+        },
+
+        {
+          "command": "codeGuardian.clearAllCaches"
+        },
+        {
+          "command": "codeGuardian.smartAnalysis"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "codeGuardian.runAllAnalysis",
+          "when": "view == codeGuardian.view",
+          "group": "navigation@1"
+        },
+        {
+          "command": "codeGuardian.showEnhancedWebview",
+          "when": "view == codeGuardian.view",
+          "group": "navigation@2"
+        },
+        {
+          "command": "codeGuardian.openSettings",
+          "when": "view == codeGuardian.view",
+          "group": "navigation@3"
+        },
+        {
+          "command": "codeGuardian.openChatbot",
+          "when": "view == codeGuardian.view",
+          "group": "navigation@4"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "codeGuardian.exportReport",
+          "when": "view == codeGuardian.view && viewItem == overallStatus",
+          "group": "inline"
+        }
+      ]
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "codeGuardian.view",
+          "name": "Guardian Security",
+          "when": "workspaceFolderCount > 0"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Guardian Security",
+      "properties": {
+        "guardianSecurity.autoAnalysis": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically run analysis when files are opened or changed"
+        },
+        "guardianSecurity.analysisOnSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run analysis automatically when you save a file"
+        },
+        "guardianSecurity.showNotifications": {
+          "type": "boolean",
+          "default": true,
+          "description": "Display notifications for analysis results and alerts"
+        },
+        "guardianSecurity.securityLevel": {
+          "type": "string",
+          "enum": [
+            "basic",
+            "standard",
+            "strict"
+          ],
+          "default": "standard",
+          "description": "Security analysis strictness level",
+          "enumDescriptions": [
+            "Basic - Essential checks only",
+            "Standard - Balanced approach",
+            "Strict - Comprehensive analysis"
+          ]
+        },
+        "guardianSecurity.excludePatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "node_modules/**",
+            "*.min.js",
+            "dist/**"
+          ],
+          "description": "File patterns to exclude from analysis (glob patterns supported)"
+        },
+        "guardianSecurity.aiSuggestionsEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable AI-powered code improvement suggestions"
+        },
+        "guardianSecurity.reportFormat": {
+          "type": "string",
+          "enum": [
+            "html",
+            "json",
+            "markdown"
+          ],
+          "default": "html",
+          "description": "Default format for exported analysis reports",
+          "enumDescriptions": [
+            "HTML Report - Rich formatted report",
+            "JSON Data - Raw data format",
+            "Markdown - Text-based format"
+          ]
+        },
+        "guardianSecurity.theme": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "light",
+            "dark"
+          ],
+          "default": "auto",
+          "description": "Theme for Guardian Security interface",
+          "enumDescriptions": [
+            "Auto - Follow VS Code theme",
+            "Light Theme",
+            "Dark Theme"
+          ]
+        }
+      }
+    },
+    "keybindings": [
+      {
+        "command": "codeGuardian.runAllAnalysis",
+        "key": "ctrl+shift+g ctrl+shift+a",
+        "mac": "cmd+shift+g cmd+shift+a",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "codeGuardian.analyzeSecurity",
+        "key": "ctrl+shift+g ctrl+shift+s",
+        "mac": "cmd+shift+g cmd+shift+s",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "codeGuardian.analyzeQuality",
+        "key": "ctrl+shift+g ctrl+shift+q",
+        "mac": "cmd+shift+g cmd+shift+q",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "codeGuardian.detectSecrets",
+        "key": "ctrl+shift+g ctrl+shift+d",
+        "mac": "cmd+shift+g cmd+shift+d",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "codeGuardian.showEnhancedWebview",
+        "key": "ctrl+shift+g ctrl+shift+w",
+        "mac": "cmd+shift+g cmd+shift+w"
+      },
+      {
+        "command": "codeGuardian.openSettings",
+        "key": "ctrl+shift+g ctrl+shift+comma",
+        "mac": "cmd+shift+g cmd+shift+comma"
+      },
+      {
+        "command": "codeGuardian.openChatbot",
+        "key": "ctrl+shift+g ctrl+shift+c",
+        "mac": "cmd+shift+g cmd+shift+c"
+      },
+      {
+        "command": "codeGuardian.chatWithAnalysis",
+        "key": "ctrl+shift+g ctrl+shift+x",
+        "mac": "cmd+shift+g cmd+shift+x",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "codeGuardian.askChatbot",
+        "key": "ctrl+shift+g ctrl+shift+h",
+        "mac": "cmd+shift+g cmd+shift+h"
+      },
+      {
+        "command": "codeGuardian.smartAnalysis",
+        "key": "ctrl+shift+g ctrl+shift+z",
+        "mac": "cmd+shift+g cmd+shift+z"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "16.x",
+    "@types/vscode": "^1.74.0",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "@vscode/test-electron": "^2.2.0",
+    "eslint": "^8.28.0",
+    "typescript": "^4.9.4",
+    "vsce": "^2.15.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "xml2js": "^0.6.2"
+  }
+}
