@@ -176,9 +176,9 @@ export class GuardianChatbot {
                 case 'analysis':
                     return this.handleAnalysisQuery(trimmedQuery, analysisContext);
                 case 'practices':
-                    return this.handleBestPracticesQuery(trimmedQuery, analysisContext);
+                    return this.handleBestPracticesQuery();
                 case 'help':
-                    return this.handleHelpQuery(trimmedQuery, analysisContext);
+                    return this.handleHelpQuery();
                 case 'fix':
                     return this.handleFixQuery(trimmedQuery, analysisContext);
                 default:
@@ -270,7 +270,7 @@ export class GuardianChatbot {
         return "I can perform comprehensive code analysis! Here's what I can do:\n\n• **🛡️ Security Analysis**: Detect vulnerabilities and security risks\n• **🔐 Secret Detection**: Find exposed credentials and sensitive data\n• **📊 Quality Assessment**: Evaluate maintainability and complexity\n• **💡 AI Suggestions**: Get intelligent improvement recommendations\n\n**Quick Start**:\n1. Open a code file\n2. Run 'Guardian Security: Run All Analysis'\n3. Chat with me about the results!\n\nWhat would you like to analyze first?";
     }
 
-    private handleBestPracticesQuery(_query: string, _analysisContext?: any): string {
+    private handleBestPracticesQuery(): string {
         const practices = [
             '**Security Best Practices**:',
             '• Always validate and sanitize user inputs',
@@ -298,7 +298,7 @@ export class GuardianChatbot {
         return practices.join('\n');
     }
 
-    private handleHelpQuery(_query: string, _analysisContext?: any): string {
+    private handleHelpQuery(): string {
         return "**Guardian Security Assistant Help**\n\nI'm here to help you with:\n\n**🔍 Analysis & Scanning**\n• Security vulnerability detection\n• Code quality assessment\n• Secret and credential detection\n• AI-powered improvement suggestions\n\n**💬 Questions I Can Answer**\n• \"How do I fix this security issue?\"\n• \"What does this vulnerability mean?\"\n• \"How can I improve my code quality?\"\n• \"What are the best practices for [topic]?\"\n• \"How do I secure my API keys?\"\n\n**🚀 Getting Started**\n1. Open any code file in VS Code\n2. Run an analysis using the command palette\n3. Ask me about the results!\n\n**💡 Pro Tips**\n• I can provide context-aware help based on your analysis results\n• Ask specific questions about vulnerabilities or code issues\n• Request explanations for any security or quality metrics\n\nWhat would you like to know more about?";
     }
 
@@ -446,7 +446,7 @@ export class GuardianChatbot {
                 });
             }
 
-            const sessionsData = Array.from(this.sessions.entries()).map(([_id, session]) => ({
+            const sessionsData = Array.from(this.sessions.entries()).map(([, session]) => ({
                 ...session,
                 messages: session.messages.map(msg => ({
                     ...msg,

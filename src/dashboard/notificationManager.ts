@@ -27,11 +27,9 @@ export class NotificationManager {
     public async showAnalysisStarted(analysisType: string, options?: NotificationOptions): Promise<void> {
         const message = `Starting ${analysisType} analysis...`;
         
-        // Simplified - just show a quick message without complex progress handling
+        // Use proper progress notification when showProgress is true
         if (options?.showProgress) {
-            // Show a simple status message instead of complex progress
-            vscode.window.showInformationMessage(message);
-            return Promise.resolve();
+            return this.showProgressNotification(message, analysisType);
         }
 
         const actions = options?.actions || [
@@ -127,7 +125,7 @@ export class NotificationManager {
         await this.showNotification(message, 'error', actions);
     }
 
-    public async showQuickTip(tip: string, category: string): Promise<void> {
+    public async showQuickTip(tip: string): Promise<void> {
         const message = `💡 Guardian Tip: ${tip}`;
         
         const actions = [
@@ -174,7 +172,7 @@ export class NotificationManager {
         await this.showNotification(message, 'info', actions);
     }
 
-    public async showUpdateNotification(version: string, features: string[]): Promise<void> {
+    public async showUpdateNotification(version: string): Promise<void> {
         const message = `🎉 Guardian Security updated to v${version}! New features available.`;
         
         const actions = [
@@ -186,10 +184,9 @@ export class NotificationManager {
     }
 
     private async showProgressNotification(message: string, key: string): Promise<void> {
-        // Simplified approach - just show a quick progress and resolve immediately
         const progressKey = `progress-${key}`;
         
-        // Store a simple resolver
+        // Store a resolver that will be called when analysis completes
         let resolveProgress: (() => void) | undefined;
         const progressPromise = new Promise<void>((resolve) => {
             resolveProgress = resolve;
@@ -202,29 +199,35 @@ export class NotificationManager {
             }
         });
 
-        // Show a simple progress notification that auto-completes
+        // Show progress notification that waits for external completion
         vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
             title: message,
             cancellable: false
         }, async (progress) => {
-            // Quick progress simulation
-            for (let i = 0; i <= 100; i += 25) {
-                progress.report({ increment: 25, message: `${i}% complete` });
-                await new Promise(resolve => setTimeout(resolve, 100));
-            }
+            // Show initial progress
+            progress.report({ increment: 0, message: '0% complete' });
             
-            // Auto-resolve after showing progress
-            setTimeout(() => {
-                if (resolveProgress) {
-                    resolveProgress();
-                    this.progressResolvers.delete(progressKey);
-                }
-            }, 500);
+            // Wait for the analysis to complete
+            await progressPromise;
+            
+            // Show completion
+            progress.report({ increment: 100, message: '100% complete' });
+            
+            // Brief delay to show completion before auto-dismissing
+            await new Promise(resolve => setTimeout(resolve, 500));
         });
 
-        // Return the promise that will be resolved when analysis completes
-        return progressPromise;
+        // Don't return the promise - let the progress notification handle its own lifecycle
+    }
+
+    // Method to complete a progress notification
+    public completeProgress(analysisType: string): void {
+        const progressKey = `progress-${analysisType}`;
+        const resolver = this.progressResolvers.get(progressKey);
+        if (resolver) {
+            resolver();
+        }
     }
 
     private async showNotification(

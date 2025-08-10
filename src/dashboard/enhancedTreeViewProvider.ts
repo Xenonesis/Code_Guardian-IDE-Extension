@@ -92,7 +92,7 @@ export class EnhancedCodeGuardianTreeProvider implements vscode.TreeDataProvider
         return element;
     }
 
-    getChildren(element?: EnhancedCodeGuardianTreeItem): Thenable<EnhancedCodeGuardianTreeItem[]> {
+    getChildren(element?: EnhancedCodeGuardianTreeItem): Promise<EnhancedCodeGuardianTreeItem[]> {
         if (!element) {
             // Root level items
             return Promise.resolve([
@@ -377,7 +377,7 @@ export class EnhancedCodeGuardianTreeProvider implements vscode.TreeDataProvider
         // Show individual results
         if (element.contextValue === 'securityResults' && this.analysisResults.vulnerabilities) {
             return Promise.resolve(
-                this.analysisResults.vulnerabilities.slice(0, 15).map((vuln: any, index: number) => {
+                this.analysisResults.vulnerabilities.slice(0, 15).map((vuln: any) => {
                     const severity = this.determineSeverity(vuln);
                     return new EnhancedCodeGuardianTreeItem(
                         `${vuln.type || 'Security Issue'}`,
@@ -395,7 +395,7 @@ export class EnhancedCodeGuardianTreeProvider implements vscode.TreeDataProvider
 
         if (element.contextValue === 'secretResults' && this.analysisResults.secrets) {
             return Promise.resolve(
-                this.analysisResults.secrets.slice(0, 15).map((secret: any, index: number) => 
+                this.analysisResults.secrets.slice(0, 15).map((secret: any) => 
                     new EnhancedCodeGuardianTreeItem(
                         `${secret.type || 'Secret'}`,
                         vscode.TreeItemCollapsibleState.None,

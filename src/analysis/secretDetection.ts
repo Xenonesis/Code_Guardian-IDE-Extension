@@ -5,127 +5,364 @@ export class SecretDetection {
     private cache = new Map<string, string[]>();
     private readonly maxCacheSize = 100;
 
-    // Pre-compiled patterns for better performance
+    // Enhanced secret patterns for comprehensive detection across all domains
     private readonly secretPatterns = [
+        // Cloud Provider Keys (AWS, Azure, GCP)
         {
-            name: 'AWS Access Key',
+            name: 'AWS Access Key ID',
             pattern: /AKIA[0-9A-Z]{16}/g,
-            confidence: 0.95
+            confidence: 0.98,
+            category: 'Cloud Credentials'
         },
         {
-            name: 'AWS Secret Key',
-            pattern: /[A-Za-z0-9/+=]{40}/g,
-            confidence: 0.7
+            name: 'AWS Secret Access Key',
+            pattern: /(?:aws_secret_access_key|AWS_SECRET_ACCESS_KEY)['":\s]*['"][A-Za-z0-9/+=]{40}['"]/gi,
+            confidence: 0.95,
+            category: 'Cloud Credentials'
         },
         {
-            name: 'GitHub Token (Classic)',
-            pattern: /ghp_[a-zA-Z0-9]{36}/g,
-            confidence: 0.95
+            name: 'AWS Session Token',
+            pattern: /(?:aws_session_token|AWS_SESSION_TOKEN)['":\s]*['"][A-Za-z0-9/+=]{100,}['"]/gi,
+            confidence: 0.95,
+            category: 'Cloud Credentials'
         },
         {
-            name: 'GitHub Token (Fine-grained)',
-            pattern: /github_pat_[a-zA-Z0-9_]{82}/g,
-            confidence: 0.95
+            name: 'Azure Storage Account Key',
+            pattern: /(?:DefaultEndpointsProtocol=https;AccountName=|AZURE_STORAGE_ACCOUNT)['":\s]*['"][A-Za-z0-9+/=]{88}['"]/gi,
+            confidence: 0.95,
+            category: 'Cloud Credentials'
         },
         {
-            name: 'GitLab Token',
-            pattern: /glpat-[a-zA-Z0-9_-]{20}/g,
-            confidence: 0.95
+            name: 'Google Cloud Service Account',
+            pattern: /\{[^}]*"type":\s*"service_account"[^}]*\}/gi,
+            confidence: 0.9,
+            category: 'Cloud Credentials'
         },
         {
             name: 'Google API Key',
             pattern: /AIza[0-9A-Za-z_-]{35}/g,
-            confidence: 0.9
+            confidence: 0.95,
+            category: 'Cloud Credentials'
+        },
+
+        // Version Control & CI/CD
+        {
+            name: 'GitHub Personal Access Token',
+            pattern: /ghp_[a-zA-Z0-9]{36}/g,
+            confidence: 0.98,
+            category: 'Version Control'
         },
         {
-            name: 'Slack Token',
-            pattern: /xox[baprs]-[0-9]{12}-[0-9]{12}-[a-zA-Z0-9]{24}/g,
-            confidence: 0.95
+            name: 'GitHub Fine-grained Token',
+            pattern: /github_pat_[a-zA-Z0-9_]{82}/g,
+            confidence: 0.98,
+            category: 'Version Control'
+        },
+        {
+            name: 'GitHub OAuth Token',
+            pattern: /gho_[a-zA-Z0-9]{36}/g,
+            confidence: 0.98,
+            category: 'Version Control'
+        },
+        {
+            name: 'GitLab Personal Access Token',
+            pattern: /glpat-[a-zA-Z0-9_-]{20}/g,
+            confidence: 0.98,
+            category: 'Version Control'
+        },
+        {
+            name: 'Bitbucket App Password',
+            pattern: /(?:bitbucket|BITBUCKET)['":\s]*['"][A-Za-z0-9]{16}['"]/gi,
+            confidence: 0.85,
+            category: 'Version Control'
+        },
+        {
+            name: 'Jenkins API Token',
+            pattern: /(?:jenkins|JENKINS)['":\s]*['"][a-f0-9]{32}['"]/gi,
+            confidence: 0.85,
+            category: 'CI/CD'
+        },
+        {
+            name: 'CircleCI Token',
+            pattern: /(?:circle[_-]?ci|CIRCLE[_-]?CI)['":\s]*['"][a-f0-9]{40}['"]/gi,
+            confidence: 0.9,
+            category: 'CI/CD'
+        },
+        {
+            name: 'Travis CI Token',
+            pattern: /(?:travis|TRAVIS)['":\s]*['"][A-Za-z0-9_-]{22}['"]/gi,
+            confidence: 0.85,
+            category: 'CI/CD'
+        },
+
+        // Database Credentials
+        {
+            name: 'MongoDB Connection String',
+            pattern: /mongodb(?:\+srv)?:\/\/[^:\s'"]+:[^@\s'"]+@[^\s'"]+/g,
+            confidence: 0.95,
+            category: 'Database'
+        },
+        {
+            name: 'MySQL Connection String',
+            pattern: /mysql:\/\/[^:\s'"]+:[^@\s'"]+@[^\s'"]+/g,
+            confidence: 0.95,
+            category: 'Database'
+        },
+        {
+            name: 'PostgreSQL Connection String',
+            pattern: /postgres(?:ql)?:\/\/[^:\s'"]+:[^@\s'"]+@[^\s'"]+/g,
+            confidence: 0.95,
+            category: 'Database'
+        },
+        {
+            name: 'Redis Connection String',
+            pattern: /redis:\/\/[^:\s'"]*:[^@\s'"]+@[^\s'"]+/g,
+            confidence: 0.9,
+            category: 'Database'
+        },
+        {
+            name: 'Database Password (Generic)',
+            pattern: /(?:db[_-]?password|database[_-]?password|DB[_-]?PASSWORD)['":\s]*['"][^'"]{8,}['"]/gi,
+            confidence: 0.85,
+            category: 'Database'
+        },
+        {
+            name: 'SQL Server Connection String',
+            pattern: /(?:server|data source)[^;]*;.*password[^;]*;/gi,
+            confidence: 0.85,
+            category: 'Database'
+        },
+
+        // API Keys & Tokens
+        {
+            name: 'Slack Bot Token',
+            pattern: /xoxb-[0-9]{12}-[0-9]{12}-[a-zA-Z0-9]{24}/g,
+            confidence: 0.98,
+            category: 'API Keys'
+        },
+        {
+            name: 'Slack User Token',
+            pattern: /xoxp-[0-9]{12}-[0-9]{12}-[a-zA-Z0-9]{24}/g,
+            confidence: 0.98,
+            category: 'API Keys'
         },
         {
             name: 'Discord Bot Token',
             pattern: /[MN][A-Za-z\d]{23}\.[\w-]{6}\.[\w-]{27}/g,
-            confidence: 0.9
+            confidence: 0.95,
+            category: 'API Keys'
         },
         {
-            name: 'API Key (Generic)',
-            pattern: /(?:api[_-]?key|apikey)['":\s]*['"][a-zA-Z0-9]{16,}['"]/gi,
-            confidence: 0.8
+            name: 'Stripe API Key',
+            pattern: /sk_(?:live|test)_[a-zA-Z0-9]{24}/g,
+            confidence: 0.98,
+            category: 'API Keys'
         },
         {
-            name: 'Password (Hardcoded)',
-            pattern: /(?:password|passwd|pwd)['":\s]*['"][^'"]{8,}['"]/gi,
-            confidence: 0.7
+            name: 'PayPal Client ID',
+            pattern: /(?:paypal|PAYPAL)['":\s]*['"][A-Za-z0-9_-]{80}['"]/gi,
+            confidence: 0.85,
+            category: 'API Keys'
         },
         {
-            name: 'Secret Key',
-            pattern: /(?:secret[_-]?key|secretkey)['":\s]*['"][a-zA-Z0-9]{16,}['"]/gi,
-            confidence: 0.8
+            name: 'Twilio Auth Token',
+            pattern: /(?:twilio|TWILIO)['":\s]*['"][a-f0-9]{32}['"]/gi,
+            confidence: 0.9,
+            category: 'API Keys'
         },
+        {
+            name: 'SendGrid API Key',
+            pattern: /SG\.[a-zA-Z0-9_-]{22}\.[a-zA-Z0-9_-]{43}/g,
+            confidence: 0.98,
+            category: 'API Keys'
+        },
+        {
+            name: 'Mailgun API Key',
+            pattern: /key-[a-f0-9]{32}/g,
+            confidence: 0.9,
+            category: 'API Keys'
+        },
+
+        // DevOps & Infrastructure
+        {
+            name: 'Docker Hub Token',
+            pattern: /(?:docker[_-]?hub|DOCKER[_-]?HUB)['":\s]*['"][a-f0-9-]{36}['"]/gi,
+            confidence: 0.85,
+            category: 'DevOps'
+        },
+        {
+            name: 'Kubernetes Service Account Token',
+            pattern: /eyJ[a-zA-Z0-9_-]*\.eyJ[a-zA-Z0-9_-]*\.[a-zA-Z0-9_-]*/g,
+            confidence: 0.8,
+            category: 'DevOps'
+        },
+        {
+            name: 'Terraform Cloud Token',
+            pattern: /(?:terraform|TERRAFORM)['":\s]*['"][A-Za-z0-9.]{14}['"]/gi,
+            confidence: 0.85,
+            category: 'DevOps'
+        },
+        {
+            name: 'Ansible Vault Password',
+            pattern: /\$ANSIBLE_VAULT;[0-9.]+;AES256/g,
+            confidence: 0.98,
+            category: 'DevOps'
+        },
+
+        // Cryptographic Keys
+        {
+            name: 'RSA Private Key',
+            pattern: /-----BEGIN\s+RSA\s+PRIVATE\s+KEY-----[\s\S]*?-----END\s+RSA\s+PRIVATE\s+KEY-----/g,
+            confidence: 1.0,
+            category: 'Cryptographic Keys'
+        },
+        {
+            name: 'EC Private Key',
+            pattern: /-----BEGIN\s+EC\s+PRIVATE\s+KEY-----[\s\S]*?-----END\s+EC\s+PRIVATE\s+KEY-----/g,
+            confidence: 1.0,
+            category: 'Cryptographic Keys'
+        },
+        {
+            name: 'OpenSSH Private Key',
+            pattern: /-----BEGIN\s+OPENSSH\s+PRIVATE\s+KEY-----[\s\S]*?-----END\s+OPENSSH\s+PRIVATE\s+KEY-----/g,
+            confidence: 1.0,
+            category: 'Cryptographic Keys'
+        },
+        {
+            name: 'PGP Private Key',
+            pattern: /-----BEGIN\s+PGP\s+PRIVATE\s+KEY\s+BLOCK-----[\s\S]*?-----END\s+PGP\s+PRIVATE\s+KEY\s+BLOCK-----/g,
+            confidence: 1.0,
+            category: 'Cryptographic Keys'
+        },
+        {
+            name: 'Certificate Private Key',
+            pattern: /-----BEGIN\s+PRIVATE\s+KEY-----[\s\S]*?-----END\s+PRIVATE\s+KEY-----/g,
+            confidence: 1.0,
+            category: 'Cryptographic Keys'
+        },
+
+        // Authentication & Session Tokens
         {
             name: 'JWT Token',
             pattern: /eyJ[a-zA-Z0-9_-]*\.[a-zA-Z0-9_-]*\.[a-zA-Z0-9_-]*/g,
-            confidence: 0.9
+            confidence: 0.9,
+            category: 'Authentication'
         },
         {
-            name: 'Private Key (RSA)',
-            pattern: /-----BEGIN\s+RSA\s+PRIVATE\s+KEY-----/g,
-            confidence: 1.0
+            name: 'Bearer Token',
+            pattern: /(?:bearer|Bearer)\s+[A-Za-z0-9_-]{20,}/g,
+            confidence: 0.8,
+            category: 'Authentication'
         },
         {
-            name: 'Private Key (Generic)',
-            pattern: /-----BEGIN\s+PRIVATE\s+KEY-----/g,
-            confidence: 1.0
+            name: 'Session Token',
+            pattern: /(?:session[_-]?token|SESSION[_-]?TOKEN)['":\s]*['"][A-Za-z0-9+/=]{32,}['"]/gi,
+            confidence: 0.8,
+            category: 'Authentication'
         },
         {
-            name: 'SSH Private Key',
-            pattern: /-----BEGIN\s+OPENSSH\s+PRIVATE\s+KEY-----/g,
-            confidence: 1.0
+            name: 'Auth Token (Generic)',
+            pattern: /(?:auth[_-]?token|AUTH[_-]?TOKEN)['":\s]*['"][A-Za-z0-9+/=]{20,}['"]/gi,
+            confidence: 0.75,
+            category: 'Authentication'
+        },
+
+        // Generic Patterns (Lower Confidence)
+        {
+            name: 'API Key (Generic)',
+            pattern: /(?:api[_-]?key|apikey|API[_-]?KEY)['":\s]*['"][a-zA-Z0-9]{16,}['"]/gi,
+            confidence: 0.7,
+            category: 'API Keys'
         },
         {
-            name: 'Database URL (MongoDB)',
-            pattern: /mongodb(?:\+srv)?:\/\/[^\s'"]+/g,
-            confidence: 0.85
+            name: 'Password (Hardcoded)',
+            pattern: /(?:password|passwd|pwd|PASSWORD)['":\s]*['"][^'"]{8,}['"]/gi,
+            confidence: 0.6,
+            category: 'Credentials'
         },
         {
-            name: 'Database URL (MySQL)',
-            pattern: /mysql:\/\/[^\s'"]+/g,
-            confidence: 0.85
+            name: 'Secret Key (Generic)',
+            pattern: /(?:secret[_-]?key|secretkey|SECRET[_-]?KEY)['":\s]*['"][a-zA-Z0-9]{16,}['"]/gi,
+            confidence: 0.7,
+            category: 'Credentials'
         },
         {
-            name: 'Database URL (PostgreSQL)',
-            pattern: /postgres(?:ql)?:\/\/[^\s'"]+/g,
-            confidence: 0.85
+            name: 'Access Token (Generic)',
+            pattern: /(?:access[_-]?token|ACCESS[_-]?TOKEN)['":\s]*['"][A-Za-z0-9+/=]{20,}['"]/gi,
+            confidence: 0.7,
+            category: 'Authentication'
         },
-        {
-            name: 'Redis URL',
-            pattern: /redis:\/\/[^\s'"]+/g,
-            confidence: 0.8
-        },
+
+        // Network & Communication
         {
             name: 'FTP Credentials',
-            pattern: /ftp:\/\/[^@\s'"]+:[^@\s'"]+@[^\s'"]+/g,
-            confidence: 0.9
+            pattern: /ftp:\/\/[^:\s'"]+:[^@\s'"]+@[^\s'"]+/g,
+            confidence: 0.95,
+            category: 'Network'
         },
         {
-            name: 'Base64 Encoded (Potential)',
-            pattern: /(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?/g,
-            confidence: 0.3
+            name: 'SMTP Credentials',
+            pattern: /smtp:\/\/[^:\s'"]+:[^@\s'"]+@[^\s'"]+/g,
+            confidence: 0.9,
+            category: 'Network'
         },
+        {
+            name: 'SSH Connection String',
+            pattern: /ssh:\/\/[^:\s'"]+:[^@\s'"]+@[^\s'"]+/g,
+            confidence: 0.85,
+            category: 'Network'
+        },
+
+        // Sensitive Data Patterns
         {
             name: 'Credit Card Number',
             pattern: /\b(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|3[0-9]{13}|6(?:011|5[0-9]{2})[0-9]{12})\b/g,
-            confidence: 0.8
+            confidence: 0.85,
+            category: 'Sensitive Data'
         },
         {
             name: 'Social Security Number',
             pattern: /\b\d{3}-\d{2}-\d{4}\b/g,
-            confidence: 0.7
+            confidence: 0.8,
+            category: 'Sensitive Data'
+        },
+        {
+            name: 'Email Address',
+            pattern: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g,
+            confidence: 0.5,
+            category: 'Sensitive Data'
         },
         {
             name: 'Phone Number',
             pattern: /\b\+?1?[-.\s]?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}\b/g,
-            confidence: 0.5
+            confidence: 0.4,
+            category: 'Sensitive Data'
+        },
+
+        // Encryption & Hashing
+        {
+            name: 'MD5 Hash',
+            pattern: /\b[a-f0-9]{32}\b/gi,
+            confidence: 0.3,
+            category: 'Hashes'
+        },
+        {
+            name: 'SHA1 Hash',
+            pattern: /\b[a-f0-9]{40}\b/gi,
+            confidence: 0.3,
+            category: 'Hashes'
+        },
+        {
+            name: 'SHA256 Hash',
+            pattern: /\b[a-f0-9]{64}\b/gi,
+            confidence: 0.3,
+            category: 'Hashes'
+        },
+        {
+            name: 'Base64 Encoded (Potential)',
+            pattern: /(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?/g,
+            confidence: 0.2,
+            category: 'Encoded Data'
         }
     ];
 
@@ -235,7 +472,9 @@ export class SecretDetection {
 
     private hashCode(str: string): string {
         let hash = 0;
-        if (str.length === 0) return hash.toString();
+        if (str.length === 0) {
+            return hash.toString();
+        }
         for (let i = 0; i < str.length; i++) {
             const char = str.charCodeAt(i);
             hash = ((hash << 5) - hash) + char;

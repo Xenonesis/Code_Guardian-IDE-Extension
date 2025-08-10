@@ -130,6 +130,46 @@
         "command": "codeGuardian.smartAnalysis",
         "title": "Guardian Security: Smart Analysis",
         "icon": "$(zap)"
+      },
+      {
+        "command": "codeGuardian.analyzeDevOps",
+        "title": "Guardian Security: DevOps Security Analysis",
+        "icon": "$(server-environment)"
+      },
+      {
+        "command": "codeGuardian.analyzeDatabase",
+        "title": "Guardian Security: Database Security Analysis",
+        "icon": "$(database)"
+      },
+      {
+        "command": "codeGuardian.analyzeFullStack",
+        "title": "Guardian Security: Full-Stack Security Analysis",
+        "icon": "$(layers)"
+      },
+      {
+        "command": "codeGuardian.comprehensiveAnalysis",
+        "title": "Guardian Security: Comprehensive Security Scan",
+        "icon": "$(shield)"
+      },
+      {
+        "command": "codeGuardian.showModernDashboard",
+        "title": "Guardian Security: Modern Dashboard",
+        "icon": "$(dashboard)"
+      },
+      {
+        "command": "codeGuardian.showPerformanceReport",
+        "title": "Guardian Security: Performance Report",
+        "icon": "$(pulse)"
+      },
+      {
+        "command": "codeGuardian.showHistoryItem",
+        "title": "Guardian Security: View Analysis History",
+        "icon": "$(history)"
+      },
+      {
+        "command": "codeGuardian.toggleFavoriteAction",
+        "title": "Guardian Security: Toggle Favorite Action",
+        "icon": "$(star)"
       }
     ],
     "menus": {
@@ -234,6 +274,30 @@
         },
         {
           "command": "codeGuardian.smartAnalysis"
+        },
+        {
+          "command": "codeGuardian.analyzeDevOps"
+        },
+        {
+          "command": "codeGuardian.analyzeDatabase"
+        },
+        {
+          "command": "codeGuardian.analyzeFullStack"
+        },
+        {
+          "command": "codeGuardian.comprehensiveAnalysis"
+        },
+        {
+          "command": "codeGuardian.showModernDashboard"
+        },
+        {
+          "command": "codeGuardian.showPerformanceReport"
+        },
+        {
+          "command": "codeGuardian.showHistoryItem"
+        },
+        {
+          "command": "codeGuardian.toggleFavoriteAction"
         }
       ],
       "view/title": [
@@ -419,9 +483,7 @@
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js",
     "package": "vsce package"
   },
   "devDependencies": {
@@ -434,8 +496,5 @@
     "typescript": "^4.9.4",
     "vsce": "^2.15.0"
   },
-  "dependencies": {
-    "axios": "^1.6.0",
-    "xml2js": "^0.6.2"
-  }
+  "dependencies": {}
 }

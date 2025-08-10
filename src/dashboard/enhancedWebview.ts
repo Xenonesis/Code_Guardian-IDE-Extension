@@ -224,12 +224,6 @@ export class EnhancedWebview {
     }
 
     private getEnhancedWebviewContent(data?: any): string {
-        const analysisMetadata = data?.metadata || {};
-        const isAutoAnalysis = analysisMetadata.autoAnalysis || false;
-        const fileName = analysisMetadata.fileName ? analysisMetadata.fileName.split('/').pop() : 'Unknown File';
-        const languageId = analysisMetadata.languageId || 'unknown';
-        const lineCount = analysisMetadata.lineCount || 0;
-        const analyzedAt = analysisMetadata.analyzedAt ? new Date(analysisMetadata.analyzedAt).toLocaleString() : 'Unknown';
 
         return `
             <!DOCTYPE html>

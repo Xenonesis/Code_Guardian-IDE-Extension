@@ -145,7 +145,7 @@ export class LineHighlighter {
             }
 
             lines.forEach((line, lineIndex) => {
-                const matches = this.findSecretsInLine(line, secretPattern);
+                const matches = this.findSecretsInLine(line);
                 matches.forEach(match => {
                     highlights.push({
                         line: lineIndex,
@@ -216,7 +216,7 @@ export class LineHighlighter {
         return matches;
     }
 
-    private findSecretsInLine(line: string, _secretPattern: string): Array<{column: number, length: number}> {
+    private findSecretsInLine(line: string): Array<{column: number, length: number}> {
         const matches: Array<{column: number, length: number}> = [];
         
         // Common secret patterns
